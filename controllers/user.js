@@ -1,14 +1,12 @@
-const Register = require('../models/user');
+const Register = require('../models/users');
 const bcrypt = require("bcryptjs");
-async function createUser(req, res) {
+async function registrUser(req, res) {
     let respObj = {
         isSuccess: false,
         Message: "Successful",
         Data: null,
     };
     try {
-        //Updating values to the database
-        console.log("res body is", req.body)
         let registerUser = new Register(req.body);
         let result = await registerUser.save();
         respObj.isSuccess = true;
@@ -23,7 +21,7 @@ async function loginUser(req,res){
     let respObj = {
         isSuccess: false,
         Message: "Successful",
-        Data: null,
+        Data: {},
         token:null,
     };
     try {
@@ -32,18 +30,18 @@ async function loginUser(req,res){
         const password = req.body.password;
         const user = await Register.findOne({ email: email });
         const Match = await bcrypt.compare(password, user.password);
-        console.log("Match is" , Match);
 
-        const token = await user.generateAuthToken(); //Generating tokens every time user login
+        const token = await user.generateAuthToken();
         res.cookie("jwt", token, {
             expires: new Date(Date.now() + 900000),
             httpOnly: true
         });
         const info = user._id;
-        console.log("info is",info)
+        const name = user.firstname;
         if (Match) {
             respObj.isSuccess = true;
-            respObj.Data = info;
+            respObj.Data.userId = info;
+            respObj.Data.userName = name;
             respObj.token = token;
             res.status(201).json(respObj);
             return true;
@@ -61,6 +59,6 @@ async function loginUser(req,res){
 
 }
 module.exports = {
-    createUser,
+    registrUser,
     loginUser,
 }
