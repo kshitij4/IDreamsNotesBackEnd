@@ -29,16 +29,19 @@ async function loginUser(req,res){
         const email = req.body.email;
         const password = req.body.password;
         const user = await Register.findOne({ email: email });
-        const Match = await bcrypt.compare(password, user.password);
-
+        const isMatch = await bcrypt.compare(password, user.password);
+        console.log("isMatch ",isMatch);
         const token = await user.generateAuthToken();
+        console.log("token ",token);
         res.cookie("jwt", token, {
             expires: new Date(Date.now() + 900000),
             httpOnly: true
         });
         const info = user._id;
         const name = user.firstname;
-        if (Match) {
+        console.log("name "+ name,info);
+        if (isMatch) {
+            console.log("in match");
             respObj.isSuccess = true;
             respObj.Data.userId = info;
             respObj.Data.userName = name;
@@ -48,7 +51,7 @@ async function loginUser(req,res){
         }
         else {
             respObj.isSuccess = true;
-            respObj.Message = "Incorrect Details"
+            respObj.Message = "Incorrect Credentials"
             res.status(404).json(respObj);
             return false;
         }

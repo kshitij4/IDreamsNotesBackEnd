@@ -9,7 +9,7 @@ async function createNote (req,res){
 	try {
         console.log("userId",req.userId)
 		let data = Note.findOneAndUpdate(
-			{ userId: req.params.userId },
+			{ userId: req.userId },
 			{
 				$push: {
 					notes: {
@@ -47,7 +47,7 @@ async function updateNoteStatus(req,res){
     };
 	try {
         console.log("req.body",req.body.status);
-		const userId = req.params.userId;
+		const userId = req.userId;
 		const noteId = req.params.noteId;
 		const data = await Note.update(
 			{ userId: userId, "notes._id": noteId },
@@ -76,7 +76,8 @@ async function getAllNotes(req,res){
         Data: null,
     };
     try{
-        let userId = req.params.userId;
+        let userId = req.userId;
+        console.log("userId: ",userId);
         let result = await Note.findOne({
             userId: userId,
         })

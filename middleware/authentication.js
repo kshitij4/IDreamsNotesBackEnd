@@ -16,14 +16,13 @@ function verifyToken(req,res,next){
         respObj.Message = "Unauthorised Request"
         return res.status(401).send(respObj);
     }
-    let payload = jwt.verify(token,process.env.SECRET_KEY )
+    let payload = jwt.verify(token,process.env.TOKENKEY )
     if(!payload){
         respObj.isSuccess = true;
         respObj.Message = "Unauthorised Request"
         return res.status(401).send(respObj);
     }
-    req.userId = payload.id
-    console.log(req.userId)
+    req.userId = payload.id;
     next();
 }
 module.exports = verifyToken;
